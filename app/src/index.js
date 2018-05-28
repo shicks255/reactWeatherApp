@@ -1,12 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-// import './index.css';
+import './index.css';
 
 class App extends React.Component {
     constructor(props)
     {
         super(props);
-
     }
     render()
     {
@@ -28,12 +27,13 @@ class WeatherCard extends React.Component {
     render()
     {
         const days = this.state.daysOfTheWeek;
-
         let allDays = days.map((step, day) =>
         {
-
-            return ('');
+            const div = <div className="dayBoxDiv" key={step}>Here</div>;
+            return (div);
         });
+
+        return(allDays);
     }
 }
 
