@@ -5,12 +5,17 @@ import './index.css';
 class App extends React.Component {
     constructor(props)
     {
+        const today = new Date();
+
         super(props);
+        this.state = {
+            today: today,
+        }
     }
     render()
     {
         return (
-            <WeatherCard />
+            <WeatherCard today={this.state.today} />
         );
     }
 }
@@ -20,20 +25,21 @@ class WeatherCard extends React.Component {
     {
         super(props);
         this.state = {
-            daysOfTheWeek: [0, 1, 2, 3, 4, 5, 6],
+            nextFiveDays: [0, 1, 2, 3, 4],
+            today: props.today,
         }
     }
 
     render()
     {
-        const days = this.state.daysOfTheWeek;
-        let allDays = days.map((step, day) =>
+        const days = this.state.nextFiveDays;
+        let nextFiveDays = days.map((step, day) =>
         {
-            const box = <DayBox dayOfWeek={step}/>
+            const box = <DayBox key={step} today={this.state.today} offset={step}/>
             return (box);
         });
 
-        return(allDays);
+        return(nextFiveDays);
     }
 }
 
@@ -42,21 +48,39 @@ class DayBox extends React.Component {
     {
         super(props);
         this.state = {
-            day: getDayOfWeek(props.dayOfWeek),
-            dayNumber: props.dayOfweek
+            day: getDayOfWeek(props.today, props.offset),
+            date: getDate(props.today, props.offset),
+            dayNumber: props.offset
         }
     }
     render()
     {
-        const thing = <div className="dayBoxDiv">
+        const box = <div className="dayBoxDiv">
             {this.state.day}
+            <br/>
+            {this.state.date}
+            <br/>
+
         </div>
-        return thing;
+        return box;
     }
 }
 
-function getDayOfWeek(dayNumber)
+function getDate(today, offset)
 {
+    const newDate = new Date(today);
+    newDate.setDate(newDate.getDate() + offset);
+
+    const dayOfMonth = newDate.getDate();
+    const month = newDate.getMonth() + 1;
+
+    return month + "/" + dayOfMonth;
+}
+
+function getDayOfWeek(today, offset)
+{
+    const dayNumber = (today.getDay() + offset);
+
     if (dayNumber === 0)
         return "Sunday";
     if (dayNumber === 1)
