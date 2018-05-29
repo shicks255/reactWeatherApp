@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import $ from "jquery";
 
 class App extends React.Component {
     constructor(props)
@@ -12,11 +13,27 @@ class App extends React.Component {
             today: today,
         }
     }
+
+    componentDidMount()
+    {
+        let self = this;
+        $.getJSON( 'http://api.openweathermap.org/data/2.5/forecast?zip=08807,us&appid=1724328d4099634fe0e88f74d30f3072',
+            function(data)
+            {
+                self.setState({weather: data});
+            });
+    }
+
     render()
     {
-        return (
-            <WeatherCard today={this.state.today} />
-        );
+        if (this.state.weather)
+        {
+            return (
+                <WeatherCard today={this.state.today} weather={this.state.weather} />
+            );
+        }
+        else
+            return ('');
     }
 }
 
@@ -25,8 +42,9 @@ class WeatherCard extends React.Component {
     {
         super(props);
         this.state = {
-            nextFiveDays: [0, 1, 2, 3, 4],
+            nextFiveDays: [0, 1, 2, 3, 4, 5],
             today: props.today,
+            weather: props.weather,
         }
     }
 
@@ -35,11 +53,16 @@ class WeatherCard extends React.Component {
         const days = this.state.nextFiveDays;
         let nextFiveDays = days.map((step, day) =>
         {
-            const box = <DayBox key={step} today={this.state.today} offset={step}/>
+            const weatherForDay = getWeatherForDay(this.state.weather, this.state.today, step);
+            const box = <DayBox key={step} today={this.state.today} offset={step} weather={weatherForDay}/>
             return (box);
         });
 
-        return(nextFiveDays);
+        return(
+            <div className="weatherCard">
+                {nextFiveDays}
+            </div>
+        );
     }
 }
 
@@ -50,20 +73,83 @@ class DayBox extends React.Component {
         this.state = {
             day: getDayOfWeek(props.today, props.offset),
             date: getDate(props.today, props.offset),
-            dayNumber: props.offset
+            dayNumber: props.offset,
+            weather: props.weather,
         }
     }
+
+    componentDidMount()
+    {
+        this.getHigh();
+        this.getLow();
+    }
+
     render()
     {
         const box = <div className="dayBoxDiv">
-            {this.state.day}
+            <b>{this.state.day}</b>
             <br/>
             {this.state.date}
             <br/>
 
+            High: {this.state.high}  {'\u2109'}
+            <br/>
+            Low: {this.state.low} {'\u2109'}
+
         </div>
         return box;
     }
+
+    getHigh()
+    {
+        let high = 0;
+        this.state.weather.map((weatherItem, i) =>
+        {
+            if (weatherItem.main.temp_max > high)
+                high = weatherItem.main.temp_max;
+        });
+
+        high = convertToFahrenheit(high);
+        this.setState({high: high});
+    }
+
+    getLow()
+    {
+        let low = 1000;
+        this.state.weather.map((weatherItem, i) =>
+        {
+            if (weatherItem.main.temp_min < low)
+                low = weatherItem.main.temp_min;
+        });
+
+        low = convertToFahrenheit(low);
+        this.setState({low: low});
+    }
+
+}
+
+//this will filter out only the dates for the parameters
+function getWeatherForDay(weather, today, step)
+{
+    const day = new Date(today);
+    day.setDate(day.getDate() + step);
+
+    const year = day.getFullYear();
+    let month = day.getMonth() + 1;
+    if (month < 10)
+        month = "0" + month;
+    let date = day.getDate();
+    if (date < 10)
+        date = "0" + date;
+    let dateString = year + "-" + month + "-" + date;
+
+    let weatherThisDay =
+        weather.list.filter((weather, i) =>
+        {
+            return weather.dt_txt.includes(dateString);
+        });
+
+    return weatherThisDay;
 }
 
 function getDate(today, offset)
@@ -81,7 +167,7 @@ function getDayOfWeek(today, offset)
 {
     const dayNumber = (today.getDay() + offset);
 
-    if (dayNumber === 0)
+    if (dayNumber === 0 || dayNumber === 7)
         return "Sunday";
     if (dayNumber === 1)
         return "Monday";
@@ -95,6 +181,14 @@ function getDayOfWeek(today, offset)
         return "Friday";
     if (dayNumber === 6)
         return "Saturday";
+}
+
+function convertToFahrenheit(kelvin)
+{
+    let far = kelvin * (9/5);
+    far -= 459.67;
+
+    return Math.round(far);
 }
 
 ReactDOM.render(
