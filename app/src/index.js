@@ -11,6 +11,7 @@ class App extends React.Component {
         super(props);
         this.state = {
             today: today,
+            showInfo: null,
         }
     }
 
@@ -28,12 +29,33 @@ class App extends React.Component {
     {
         if (this.state.weather)
         {
+            const weatherCard = <WeatherCard
+                    showInfo={this.state.showInfo}
+                    today={this.state.today}
+                    weather={this.state.weather}
+                    onClick={(step, weather) => this.handleClick(step, weather)}/>
+
+            console.log(this.state.showInfo);
+            const addInfo = this.state.showInfo == null ?
+                '' : <AdditionalInfo weather={this.state.weatherInfo} step={this.state.showInfo}/>;
+
             return (
-                <WeatherCard today={this.state.today} weather={this.state.weather} />
+                <div>
+                    {weatherCard}
+                    {addInfo}
+                </div>
             );
         }
         else
             return ('');
+    }
+
+    handleClick(step, weather)
+    {
+        this.setState({
+            showInfo: step,
+            weatherInfo: weather
+        });
     }
 }
 
@@ -45,6 +67,7 @@ class WeatherCard extends React.Component {
             nextFiveDays: [0, 1, 2, 3, 4, 5],
             today: props.today,
             weather: props.weather,
+            showInfo: props.showInfo,
         }
     }
 
@@ -54,7 +77,15 @@ class WeatherCard extends React.Component {
         let nextFiveDays = days.map((step, day) =>
         {
             const weatherForDay = getWeatherForDay(this.state.weather, this.state.today, step);
-            const box = <DayBox key={step} today={this.state.today} offset={step} weather={weatherForDay}/>
+            const box = <DayBox
+                key={step}
+                today={this.state.today}
+                offset={step}
+                weather={weatherForDay}
+                onClick={(step, weather) => this.props.onClick(step, weather)}
+                showInfo={this.state.showInfo}
+            />
+
             return (box);
         });
 
@@ -75,6 +106,7 @@ class DayBox extends React.Component {
             date: getDate(props.today, props.offset),
             dayNumber: props.offset,
             weather: props.weather,
+            showInfo: props.showInfo,
         }
     }
 
@@ -86,17 +118,20 @@ class DayBox extends React.Component {
 
     render()
     {
-        const box = <div className="dayBoxDiv">
-            <b>{this.state.day}</b>
-            <br/>
-            {this.state.date}
-            <br/>
+        const box =
+            <div className="dayBoxDiv">
+                <div className="test" onClick={(step, weather) => this.props.onClick(this.state.dayNumber, this.state.weather)}>
+                    <b>{this.state.day}</b>
+                    <br/>
+                    {this.state.date}
+                    <br/>
 
-            High: {this.state.high}  {'\u2109'}
-            <br/>
-            Low: {this.state.low} {'\u2109'}
+                    High: {this.state.high}  {'\u2109'}
+                    <br/>
+                    Low: {this.state.low} {'\u2109'}
 
-        </div>
+                </div>
+            </div>
         return box;
     }
 
@@ -125,7 +160,24 @@ class DayBox extends React.Component {
         low = convertToFahrenheit(low);
         this.setState({low: low});
     }
+}
 
+class AdditionalInfo extends React.Component {
+    constructor(props)
+    {
+        super(props);
+        this.state = {
+            weatherInfo: props.weatherInfo,
+            step: props.showInfo,
+        }
+    }
+
+    render()
+    {
+        return (
+            <div>penis</div>
+        );
+    }
 }
 
 //this will filter out only the dates for the parameters

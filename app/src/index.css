@@ -17,6 +17,13 @@
     border-radius: 5px;
     display: inline-block;
 }
+.dayBoxDiv :hover {
+    background-color: grey;
+}
+
+.test{
+    height: 90%;
+}
 
 @media (max-width: 960px) {
     .dayBoxDiv{
