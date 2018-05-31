@@ -35,9 +35,8 @@ class App extends React.Component {
                     weather={this.state.weather}
                     onClick={(step, weather) => this.handleClick(step, weather)}/>
 
-            console.log(this.state.showInfo);
             const addInfo = this.state.showInfo == null ?
-                '' : <AdditionalInfo weather={this.state.weatherInfo} step={this.state.showInfo}/>;
+                '' : <AdditionalInfo weatherInfo={this.state.weatherInfo} step={this.state.showInfo}/>;
 
             return (
                 <div>
@@ -174,11 +173,45 @@ class AdditionalInfo extends React.Component {
 
     render()
     {
+        console.log(this.state.weatherInfo);
+        const weather = this.state.weatherInfo.map((weather,i) =>
+        {
+            const date = new Date(weather.dt_txt);
+            let time = date.getHours() - 4;
+            if (time > 12)
+                time = time - 12;
+
+            const cloudInfo = getCloudInfo(weather.clouds);
+            const rainInfo = getRainInfo(weather.rain);
+            const windInfo = getWindInfo(weather.wind);
+            const weatherInfo = getWeatherInfo(weather.weather);
+
+            const hourBox = <div className="hourBox">{time}</div>
+            return hourBox;
+        });
+
         return (
-            <div>penis</div>
+            weather
         );
     }
 }
+
+function getCloudInfo(weather)
+{
+
+}
+
+function getRainInfo(weather)
+{}
+
+function getWindInfo(weather)
+{}
+
+function getWeatherInfo(weatherArray)
+{
+
+}
+
 
 //this will filter out only the dates for the parameters
 function getWeatherForDay(weather, today, step)
@@ -221,17 +254,17 @@ function getDayOfWeek(today, offset)
 
     if (dayNumber === 0 || dayNumber === 7)
         return "Sunday";
-    if (dayNumber === 1)
+    if (dayNumber === 1 || dayNumber == 8)
         return "Monday";
-    if (dayNumber === 2)
+    if (dayNumber === 2 || dayNumber == 9)
         return "Tuesday";
-    if (dayNumber === 3)
+    if (dayNumber === 3 || dayNumber == 10)
         return "Wednesday";
-    if (dayNumber === 4)
+    if (dayNumber === 4 || dayNumber == 11)
         return "Thursday";
-    if (dayNumber === 5)
+    if (dayNumber === 5 || dayNumber == 12)
         return "Friday";
-    if (dayNumber === 6)
+    if (dayNumber === 6 || dayNumber == 13)
         return "Saturday";
 }
 
