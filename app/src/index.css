@@ -21,6 +21,22 @@
     background-color: grey;
 }
 
+.addedInfoBox{
+    text-align: center;
+    position: relative;
+    margin: 10px;
+    height: 200px;
+
+}
+
+.hoursBox{
+    display:inline-block;
+    width: 100px;
+    height:100%;
+    border: 1px solid black;
+    boder-radius: 5px;
+}
+
 .test{
     height: 90%;
 }

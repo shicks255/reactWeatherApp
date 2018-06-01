@@ -35,13 +35,13 @@ class App extends React.Component {
                     weather={this.state.weather}
                     onClick={(step, weather) => this.handleClick(step, weather)}/>
 
-            const addInfo = this.state.showInfo == null ?
-                '' : <AdditionalInfo weatherInfo={this.state.weatherInfo} step={this.state.showInfo}/>;
+            // let addInfo = this.state.showInfo == null ?
+            //     '' : <AdditionalInfo weatherInfo={this.state.weatherInfo} step={this.state.showInfo}/>;
 
             return (
                 <div>
                     {weatherCard}
-                    {addInfo}
+                    {this.state.showInfo != null && <AdditionalInfo weatherInfo={this.state.weatherInfo} step={this.state.showInfo}/>}
                 </div>
             );
         }
@@ -162,50 +162,57 @@ class DayBox extends React.Component {
 }
 
 class AdditionalInfo extends React.Component {
-    constructor(props)
-    {
-        super(props);
-        this.state = {
-            weatherInfo: props.weatherInfo,
-            step: props.showInfo,
-        }
-    }
-
     render()
     {
-        console.log(this.state.weatherInfo);
-        const weather = this.state.weatherInfo.map((weather,i) =>
+        const weather = this.props.weatherInfo.map((weather,i) =>
         {
             const date = new Date(weather.dt_txt);
-            let time = date.getHours() - 4;
+            let time = date.getHours();
             if (time > 12)
                 time = time - 12;
+            time -= 4;
 
             const cloudInfo = getCloudInfo(weather.clouds);
             const rainInfo = getRainInfo(weather.rain);
             const windInfo = getWindInfo(weather.wind);
             const weatherInfo = getWeatherInfo(weather.weather);
 
-            const hourBox = <div className="hourBox">{time}</div>
-            return hourBox;
+            return (
+                <div key={i} className="hoursBox">
+                    {time}:00
+                    <br/>
+                    {cloudInfo}
+                    <br/>
+                    {rainInfo}
+                    <br/>
+                    {windInfo}
+                </div>
+            )
         });
 
         return (
-            weather
+            <div className="addedInfoBox">
+                {weather}
+            </div>
         );
     }
 }
 
 function getCloudInfo(weather)
 {
-
+    return weather.all + " % cloud coverage";
 }
 
 function getRainInfo(weather)
-{}
+{
+    return weather['3h'] + " inches rain accumlation the past 3 hours.";
+}
 
 function getWindInfo(weather)
-{}
+{
+    console.log(weather);
+
+}
 
 function getWeatherInfo(weatherArray)
 {
