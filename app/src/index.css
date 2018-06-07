@@ -17,8 +17,11 @@
     border-radius: 5px;
     display: inline-block;
 }
-.dayBoxDiv :hover {
+.dayBoxDiv:hover {
     background-color: grey;
+}
+.selected {
+    background-color: blue;
 }
 
 .addedInfoBox{
@@ -26,7 +29,6 @@
     position: relative;
     margin: 10px;
     height: 200px;
-
 }
 
 .hoursBox{
@@ -47,6 +49,26 @@
         width: 35%;
         margin-top: 10px;
         margin-bottom: 10px;
+    }
+
+    .addedInfoBox{
+        float: right;
+        position: fixed;
+        top : 5%;
+        left : 40%;
+        right: 2%;
+        bottom: 10%;
+        width: 60%;
+        height:90%;
+        overflow: visible;
+    }
+
+    .hoursBox{
+        display: block;
+        text-align: center;
+        margin: 0 auto;
+        width: 75%;
+        height: 100px;
     }
 }
 

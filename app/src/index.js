@@ -35,9 +35,6 @@ class App extends React.Component {
                     weather={this.state.weather}
                     onClick={(step, weather) => this.handleClick(step, weather)}/>
 
-            // let addInfo = this.state.showInfo == null ?
-            //     '' : <AdditionalInfo weatherInfo={this.state.weatherInfo} step={this.state.showInfo}/>;
-
             return (
                 <div>
                     {weatherCard}
@@ -64,9 +61,6 @@ class WeatherCard extends React.Component {
         super(props);
         this.state = {
             nextFiveDays: [0, 1, 2, 3, 4, 5],
-            today: props.today,
-            weather: props.weather,
-            showInfo: props.showInfo,
         }
     }
 
@@ -75,14 +69,14 @@ class WeatherCard extends React.Component {
         const days = this.state.nextFiveDays;
         let nextFiveDays = days.map((step, day) =>
         {
-            const weatherForDay = getWeatherForDay(this.state.weather, this.state.today, step);
+            const weatherForDay = getWeatherForDay(this.props.weather, this.props.today, step);
             const box = <DayBox
                 key={step}
-                today={this.state.today}
+                today={this.props.today}
                 offset={step}
                 weather={weatherForDay}
                 onClick={(step, weather) => this.props.onClick(step, weather)}
-                showInfo={this.state.showInfo}
+                selected={this.props.showInfo === step}
             />
 
             return (box);
@@ -103,9 +97,6 @@ class DayBox extends React.Component {
         this.state = {
             day: getDayOfWeek(props.today, props.offset),
             date: getDate(props.today, props.offset),
-            dayNumber: props.offset,
-            weather: props.weather,
-            showInfo: props.showInfo,
         }
     }
 
@@ -117,9 +108,12 @@ class DayBox extends React.Component {
 
     render()
     {
+        const selectedDayBox = this.props.selected ?
+                'test selected' : 'test';
+        console.log(selectedDayBox);
         const box =
             <div className="dayBoxDiv">
-                <div className="test" onClick={(step, weather) => this.props.onClick(this.state.dayNumber, this.state.weather)}>
+                <div className={selectedDayBox} onClick={() => this.props.onClick(this.props.offset, this.props.weather)}>
                     <b>{this.state.day}</b>
                     <br/>
                     {this.state.date}
@@ -137,7 +131,7 @@ class DayBox extends React.Component {
     getHigh()
     {
         let high = 0;
-        this.state.weather.map((weatherItem, i) =>
+        this.props.weather.map((weatherItem, i) =>
         {
             if (weatherItem.main.temp_max > high)
                 high = weatherItem.main.temp_max;
@@ -150,7 +144,7 @@ class DayBox extends React.Component {
     getLow()
     {
         let low = 1000;
-        this.state.weather.map((weatherItem, i) =>
+        this.props.weather.map((weatherItem, i) =>
         {
             if (weatherItem.main.temp_min < low)
                 low = weatherItem.main.temp_min;
